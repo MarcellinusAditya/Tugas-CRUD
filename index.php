@@ -1,7 +1,29 @@
 <?php
   include_once('connection.php');
 
-
+ 
+  error_reporting(0);
+   
+  session_start();
+   
+  if (isset($_SESSION['username'])) {
+      header("Location: home.php");
+  }
+   
+  if (isset($_POST['submit'])) {
+      $username = $_POST['username'];
+      $password = md5($_POST['password']);
+   
+      $sql = "SELECT * FROM users WHERE username='$username' AND password='$password'";
+      $result = mysqli_query($mysqli, $sql);
+      if ($result->num_rows > 0) {
+          $row = mysqli_fetch_assoc($result);
+          $_SESSION['username'] = $row['nama'];
+          header("Location: home.php");
+      } else {
+          echo "<script>alert('Username atau password Anda salah. Silahkan coba lagi!')</script>";
+      }
+  }
 
    
 ?>
@@ -65,60 +87,25 @@
   </head>
   <body>
     <div class="container">
-      <h1>Menghitung Nilai Rata-Rata</h1>
+      <h1>Login</h1>
 
-      <form method="post" action="insert.php" name="formData" >
-        <label for="nama">Nama </label><br />
+      <form method="post" action="" name="" >
+        <label for="username">Username </label><br />
         <br />
-        <input type="text" id="nama" name="nama" required /><br />
+        <input type="text" id="username" name="username" required /><br />
         <br />
 
-        <label for="matkul">Mata Kuliah</label><br /><br />
-        <input type="text" id="matkul" name="matkul" required /><br /><br />
+        <label for="password">Password</label><br /><br />
+        <input type="password" id="password" name="password" required /><br /><br />
 
-        <label for="grade">Grade</label><br /><br />
-        <select name="grade" id="grade" required>
-          <option value="">Grade</option>
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-          <option value="D">D</option>
-          <option value="E">E</option>
-        </select>
+        
         <br />
         <br />
 
-        <input class="submit" type="submit" name="proses" value="insert">
+        <input class="submit" type="submit" name="submit" value="Log In">
       </form>
 
-      <table border="1" border-color="black" width="100%" id="data">
-        <tr>
-          <th>Nama</th>
-          <th>Mata Kuliah</th>
-          <th>Grade</th>
-          <th>Nilai Rata-Rata</th>
-          <th>Aksi</th>
-        </tr>
-
-        <?php
-          $query="SELECT * from mahasiswa";
-          $result=$mysqli->query($query);
-          if($result->num_rows > 0){
-              while($data=$result->fetch_assoc())
-          {
-
-
-        ?>
-        <tr>
-          <td><?php echo $data['nama'];?></td>
-          <td><?php echo $data['matkul'];?></td>
-          <td><?php echo $data['grade'];?></td>
-          <td><?php echo $data['rata_rata'];?></td>
-          <td><a href="update.php?id=<?=$data['id']?>">Edit</a>    <a href="delete.php?id=<?=$data['id']?>&proses=delete">Delete</a></td>
-        </tr>
-        
-        <?php }}?>
-      </table>
+      
     </div>
   </body>
   
